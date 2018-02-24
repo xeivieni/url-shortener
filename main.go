@@ -25,12 +25,12 @@ func RandStringRunes(n int) string {
 	return string(b)
 }
 
-func safeLongUrl(url []byte) string {
+func safeLongUrl(url string) string {
 	re := regexp.MustCompile("http(s?)://")
-	if re.Match(url) {
-		return string(url)
+	if re.Match([]byte(url)) {
+		return url
 	}
-	return "http://" + string(url)
+	return "http://" + url
 }
 
 func generateShort() string {
@@ -63,7 +63,7 @@ func RedirectHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	url, _ := UrlFromShort(vars["shorturl"])
 	if url != nil {
-		http.Redirect(w, r, safeLongUrl([]byte(url.LongUrl)), 301)
+		http.Redirect(w, r, safeLongUrl(url.LongUrl), 301)
 	}
 	fmt.Fprintf(w, "<h1>No match for url %s</h1>", vars["shorturl"])
 }
